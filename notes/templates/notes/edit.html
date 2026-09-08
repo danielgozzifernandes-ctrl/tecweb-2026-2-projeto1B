@@ -1,0 +1,28 @@
+{% extends "notes/base.html" %}
+
+{% block content %}
+<main class="container">
+  <form class="form-card" method="post">
+    {% csrf_token %}
+    {% if erro %}
+    <p class="form-error">{{ erro }}</p>
+    {% endif %}
+    <input
+      class="form-card-title"
+      type="text"
+      name="titulo"
+      placeholder="Título"
+      value="{% if erro %}{{ titulo }}{% else %}{{ note.title }}{% endif %}"
+    />
+    <textarea
+      class="autoresize"
+      name="detalhes"
+      placeholder="Digite o conteúdo..."
+    >{% if erro %}{{ detalhes }}{% else %}{{ note.content }}{% endif %}</textarea>
+    <div class="form-actions">
+      <button class="btn" type="submit">Salvar</button>
+      <a class="btn btn-secondary" href="{% url 'index' %}">Cancelar</a>
+    </div>
+  </form>
+</main>
+{% endblock %}

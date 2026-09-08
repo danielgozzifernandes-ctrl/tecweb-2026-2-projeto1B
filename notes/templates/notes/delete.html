@@ -1,0 +1,24 @@
+{% extends "notes/base.html" %}
+
+{% block content %}
+<main class="container">
+  <div class="form-card">
+    <p class="confirm-question">Tem certeza que deseja apagar esta anotação?</p>
+
+    <div class="confirm-note">
+      <div class="card card-color-4">
+        <h3 class="card-title">{{ note.title }}</h3>
+        <div class="card-content">
+          <p>{{ note.content }}</p>
+        </div>
+      </div>
+    </div>
+
+    <form class="form-actions" method="post">
+      {% csrf_token %}
+      <button class="btn" type="submit">Sim</button>
+      <a class="btn btn-secondary" href="{% url 'index' %}">Não</a>
+    </form>
+  </div>
+</main>
+{% endblock %}

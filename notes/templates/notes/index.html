@@ -4,17 +4,21 @@
 <main class="container">
   <form class="form-card" method="post">
     {% csrf_token %}
+    {% if erro %}
+    <p class="form-error">{{ erro }}</p>
+    {% endif %}
     <input
       class="form-card-title"
       type="text"
       name="titulo"
       placeholder="Título"
+      value="{{ titulo }}"
     />
     <textarea
       class="autoresize"
       name="detalhes"
       placeholder="Digite o conteúdo..."
-    ></textarea>
+    >{{ detalhes }}</textarea>
     <button class="btn" type="submit">Criar</button>
   </form>
 
@@ -23,6 +27,10 @@
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">{{ note.title }}</h3>
+        <div class="card-actions">
+          <a class="card-action" href="{% url 'edit' note.id %}" title="Editar">&#9998;</a>
+          <a class="card-action" href="{% url 'delete' note.id %}" title="Apagar">&#128465;</a>
+        </div>
       </div>
       <div class="card-content">
         <p>{{ note.content }}</p>
