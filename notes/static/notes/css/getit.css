@@ -294,3 +294,58 @@ textarea.autoresize::placeholder {
 .btn-link:hover {
   background-color: #e0af26;
 }
+
+/* Campo de tag no formulário e tags exibidas nos cartões */
+
+.form-card-tag {
+  border: none;
+  outline: none;
+  margin-top: 12px;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color: #2c2c2c;
+}
+
+.form-card-tag::placeholder {
+  color: #a0a0a0;
+}
+
+.card-tag {
+  margin-top: 12px;
+  font-family: "Roboto", sans-serif;
+  font-size: 13px;
+  color: #4c4c4c;
+  text-decoration: none;
+}
+
+.card-tag:hover {
+  color: #2c2c2c;
+}
+
+.tags-link {
+  margin-bottom: 40px;
+  font-size: 15px;
+  color: #4c4c4c;
+}
+
+/* Páginas de listagem (tags) */
+
+.list-title {
+  margin-bottom: 20px;
+  font-family: "Permanent Marker", cursive;
+  font-size: 24px;
+  color: #2c2c2c;
+}
+
+.tag-list {
+  margin-bottom: 20px;
+}
+
+.tag-list li {
+  padding: 8px 0;
+  font-size: 16px;
+}
+
+.tag-list a {
+  color: #2c2c2c;
+}

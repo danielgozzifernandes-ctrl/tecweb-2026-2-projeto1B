@@ -1,29 +1,41 @@
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .models import Note, Tag
 
-from .models import Note
+
+def _get_tag(nome):
+    """Devolve a tag com esse nome, criando uma nova se ainda não existir.
+
+    Retorna None quando o campo vem vazio (anotação sem tag).
+    """
+    nome = nome.strip()
+    if not nome:
+        return None
+
+    tag, _ = Tag.objects.get_or_create(nome=nome)
+    return tag
 
 
 def index(request):
     if request.method == 'POST':
         title = request.POST.get('titulo', '').strip()
         content = request.POST.get('detalhes', '').strip()
+        tag_nome = request.POST.get('tag', '')
 
         if not title or not content:
-            all_notes = Note.objects.all()
             context = {
-                'notes': all_notes,
+                'notes': Note.objects.all(),
                 'erro': 'Preencha o título e o conteúdo da anotação.',
                 'titulo': title,
                 'detalhes': content,
+                'tag': tag_nome,
             }
             return render(request, 'notes/index.html', context)
 
-        Note.objects.create(title=title, content=content)
+        Note.objects.create(title=title, content=content, tag=_get_tag(tag_nome))
         return redirect('index')
 
-    all_notes = Note.objects.all()
-    return render(request, 'notes/index.html', {'notes': all_notes})
+    return render(request, 'notes/index.html', {'notes': Note.objects.all()})
 
 
 def edit(request, note_id):
@@ -32,6 +44,7 @@ def edit(request, note_id):
     if request.method == 'POST':
         title = request.POST.get('titulo', '').strip()
         content = request.POST.get('detalhes', '').strip()
+        tag_nome = request.POST.get('tag', '')
 
         if not title or not content:
             context = {
@@ -39,11 +52,13 @@ def edit(request, note_id):
                 'erro': 'Preencha o título e o conteúdo da anotação.',
                 'titulo': title,
                 'detalhes': content,
+                'tag': tag_nome,
             }
             return render(request, 'notes/edit.html', context)
 
         note.title = title
         note.content = content
+        note.tag = _get_tag(tag_nome)
         note.save()
         return redirect('index')
 
@@ -58,3 +73,12 @@ def delete(request, note_id):
         return redirect('index')
 
     return render(request, 'notes/delete.html', {'note': note})
+
+
+def tags_list(request):
+    return render(request, 'notes/tags_list.html', {'tags': Tag.objects.all()})
+
+
+def tag_detail(request, tag_id):
+    tag = get_object_or_404(Tag, pk=tag_id)
+    return render(request, 'notes/tag_detail.html', {'tag': tag, 'notes': tag.notes.all()})

@@ -19,6 +19,13 @@
       name="detalhes"
       placeholder="Digite o conteúdo..."
     >{% if erro %}{{ detalhes }}{% else %}{{ note.content }}{% endif %}</textarea>
+    <input
+      class="form-card-tag"
+      type="text"
+      name="tag"
+      placeholder="Tag (opcional)"
+      value="{% if erro %}{{ tag }}{% elif note.tag %}{{ note.tag.nome }}{% endif %}"
+    />
     <div class="form-actions">
       <button class="btn" type="submit">Salvar</button>
       <a class="btn btn-secondary" href="{% url 'index' %}">Cancelar</a>

@@ -1,0 +1,17 @@
+{% extends "notes/base.html" %}
+
+{% block content %}
+<main class="container">
+  <div class="form-card">
+    <h2 class="list-title">Tags</h2>
+    <ul class="tag-list">
+      {% for tag in tags %}
+      <li><a href="{% url 'tag_detail' tag.id %}">{{ tag.nome }}</a></li>
+      {% empty %}
+      <li>Nenhuma tag criada ainda.</li>
+      {% endfor %}
+    </ul>
+    <a class="btn-link" href="{% url 'index' %}">Voltar</a>
+  </div>
+</main>
+{% endblock %}

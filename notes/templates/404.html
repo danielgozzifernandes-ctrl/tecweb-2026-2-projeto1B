@@ -1,0 +1,13 @@
+{% extends "notes/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="container">
+  <div class="page-message">
+    <img src="{% static 'notes/img/logo-getit.png' %}" alt="Get-it" />
+    <h1>Página não encontrada</h1>
+    <p>A anotação ou página que você procurou não existe (ou foi apagada).</p>
+    <a class="btn-link" href="{% url 'index' %}">Voltar para o início</a>
+  </div>
+</main>
+{% endblock %}
