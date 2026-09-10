@@ -16,19 +16,40 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Carrega o arquivo .env (se existir) para as variáveis de ambiente.
+_env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    for _linha in _env_file.read_text().splitlines():
+        _linha = _linha.strip()
+        if not _linha or _linha.startswith('#') or '=' not in _linha:
+            continue
+        _chave, _valor = _linha.split('=', 1)
+        os.environ.setdefault(_chave.strip(), _valor.strip())
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+q)w$%46*9+v^+5)s-^x2^u^ue3l2tz29--sxew_=wkb!qk__)'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-+q)w$%46*9+v^+5)s-^x2^u^ue3l2tz29--sxew_=wkb!qk__)',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-CSRF_TRUSTED_ORIGINS = [
+# A hospedagem (Render, Railway, etc.) costuma expor o domínio numa variável.
+_host_externo = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if _host_externo:
+    ALLOWED_HOSTS.append(_host_externo)
+    CSRF_TRUSTED_ORIGINS_EXTRA = [f'https://{_host_externo}']
+else:
+    CSRF_TRUSTED_ORIGINS_EXTRA = []
+
+CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_EXTRA + [
     origin
     for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin
@@ -81,9 +102,20 @@ WSGI_APPLICATION = 'getit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-# Usa PostgreSQL quando as variáveis de ambiente estão definidas (Docker/deploy)
-# e cai no SQLite para o desenvolvimento local rápido.
-if os.environ.get('DB_NAME'):
+# Ordem de preferência:
+#   1. DATABASE_URL  -> usada pelos serviços de deploy (Render, Railway, ...)
+#   2. DB_NAME/DB_USER/... -> PostgreSQL local via Docker
+#   3. SQLite -> desenvolvimento rápido sem banco externo
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+
+    DATABASES = {
+        'default': dj_database_url.parse(
+            os.environ['DATABASE_URL'],
+            conn_max_age=600,
+        )
+    }
+elif os.environ.get('DB_NAME'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -157,3 +189,12 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+# Segurança extra quando roda em produção (deploy com DEBUG desligado)
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

@@ -10,6 +10,11 @@ services:
       - "5432:5432"
     volumes:
       - getit_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U getituser -d getit"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   getit_pgdata:
