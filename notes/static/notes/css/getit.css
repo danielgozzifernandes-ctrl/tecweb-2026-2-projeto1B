@@ -165,7 +165,7 @@ textarea.autoresize::placeholder {
 .card-rotation-10 { transform: rotate(1deg); }
 .card-rotation-11 { transform: rotate(-2deg); }
 
-/* Ações de cada anotação: favoritar, editar e apagar */
+/* Ações de cada anotação: editar e apagar */
 
 .card-header {
   display: flex;
