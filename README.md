@@ -9,37 +9,30 @@ Aplicação de anotações (estilo Post-it) feita em Django para o Projeto 1B de
 - Cada anotação pode ter uma tag; página com a lista de tags e página com as anotações de cada tag
 - Página 404 personalizada
 
-## Rodando localmente (SQLite)
-
-```bash
-python -m venv env
-source env/bin/activate        # Windows: env\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-A aplicação fica em http://localhost:8000/.
-
-## Rodando com PostgreSQL (Docker)
+## Rodando com PostgreSQL no Docker (Tarefa 03)
 
 ```bash
 docker compose up -d
-cp .env.example .env
 python manage.py migrate
 python manage.py runserver
 ```
 
-O `settings.py` lê o `.env` automaticamente. A ordem de escolha do banco é:
-`DATABASE_URL` (deploy) → `DB_NAME`/`DB_USER`/... (Postgres local) → SQLite.
+O banco é escolhido pela variável de ambiente `DATABASE_URL`. Para o Postgres local
+do `docker-compose.yml`, coloque no arquivo `.env`:
 
-## Deploy
+```
+DATABASE_URL=postgres://getituser:getitsenha@localhost:5432/getit
+```
 
-O projeto já vem com `render.yaml`, `build.sh` e `Procfile`. No [Render](https://render.com):
+## Deploy no Render (Tarefa 04)
 
-1. New + → Blueprint → conectar este repositório (branch `docker-postgres`).
-2. O blueprint cria o banco PostgreSQL e o serviço web; `SECRET_KEY` é gerada e
-   `DEBUG=False` já vem definido.
-3. Ao terminar, colar aqui o link:
+1. Criar um PostgreSQL no Render (plano gratuito) e copiar a **External Database URL**.
+2. Criar um Web Service apontando para este repositório.
+3. Em *Environment*, criar a variável `DATABASE_URL` com a External Database URL.
+4. Start Command:
+
+```
+python manage.py migrate && python manage.py collectstatic && gunicorn getit.wsgi:application
+```
 
 Link da aplicação: _(a adicionar)_
