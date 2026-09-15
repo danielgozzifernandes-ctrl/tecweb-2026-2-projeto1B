@@ -35,4 +35,4 @@ DATABASE_URL=postgres://getituser:getitsenha@localhost:5432/getit
 python manage.py migrate && python manage.py collectstatic && gunicorn getit.wsgi:application
 ```
 
-Link da aplicação: _(a adicionar)_
+Link da aplicação: https://tecweb-2026-2-projeto1b-6dop.onrender.com
