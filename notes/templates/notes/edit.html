@@ -22,9 +22,9 @@
     <input
       class="form-card-tag"
       type="text"
-      name="tag"
-      placeholder="Tag (opcional)"
-      value="{% if erro %}{{ tag }}{% elif note.tag %}{{ note.tag.nome }}{% endif %}"
+      name="tags"
+      placeholder="Tags separadas por vírgula (opcional)"
+      value="{{ tags }}"
     />
     <div class="form-actions">
       <button class="btn" type="submit">Salvar</button>

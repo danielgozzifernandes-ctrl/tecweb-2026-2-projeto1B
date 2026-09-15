@@ -6,7 +6,8 @@ Aplicação de anotações (estilo Post-it) feita em Django para o Projeto 1B de
 
 - Criar, listar, editar e apagar anotações
 - Validação do formulário (título e conteúdo obrigatórios)
-- Cada anotação pode ter uma tag; página com a lista de tags e página com as anotações de cada tag
+- Cada anotação pode ter nenhuma, uma ou várias tags (digitadas separadas por vírgula);
+  página com a lista de tags e página com as anotações de cada tag
 - Página 404 personalizada
 
 ## Rodando com PostgreSQL no Docker (Tarefa 03)
