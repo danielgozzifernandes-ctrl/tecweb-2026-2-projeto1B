@@ -10,9 +10,14 @@ Tecnologias Web.
 | Tarefa | O que foi feito |
 |---|---|
 | 01 — CRUD em Django | Criar, listar, editar e apagar anotações |
-| 02 — Sistema de tags | Cada anotação pode ter uma tag (relação *many-to-one*) |
+| 02 — Sistema de tags | Cada anotação pode ter nenhuma, uma ou várias tags (*many-to-many*) |
 | 03 — PostgreSQL no Docker | Banco em container, configurado no `docker-compose.yml` |
 | 04 — Deploy | Publicado no Render (link acima) |
+
+As tags são digitadas no próprio formulário, separadas por vírgula
+(`casa, prova, urgente`). Tags que já existem são reaproveitadas, as novas são
+criadas na hora, e na edição o campo já vem preenchido com as tags atuais — dá
+para acrescentar ou remover tags só mexendo no texto.
 
 Além do pedido nas tarefas: validação do formulário (não deixa criar anotação sem
 título ou sem conteúdo), página de confirmação antes de apagar e página 404
@@ -36,11 +41,15 @@ Suba o PostgreSQL em container:
 docker compose up -d
 ```
 
-Crie um arquivo `.env` na raiz do projeto (veja o `.env.example`):
+Crie um arquivo `.env` na raiz do projeto (é só copiar o `.env.example`):
 
 ```
+DEBUG=True
 DATABASE_URL=postgres://getituser:getitsenha@localhost:5432/getit
 ```
+
+O `DEBUG=True` é importante no ambiente local: fora dele a conexão com o banco
+exige SSL, que o Postgres do container não usa.
 
 E rode o projeto:
 
@@ -59,19 +68,18 @@ Feito no Render, seguindo o handout:
 - O banco é um PostgreSQL do próprio Render; a *External Database URL* fica na
   variável de ambiente `DATABASE_URL` do serviço (não está no código porque o
   repositório é público).
+- `DEBUG` não é definida no Render, então a aplicação sobe com `DEBUG = False` e
+  exigindo SSL no banco.
 - Start Command:
 
 ```
-python manage.py migrate && python manage.py collectstatic && gunicorn getit.wsgi:application
+python manage.py migrate && python manage.py collectstatic --noinput && gunicorn getit.wsgi:application
 ```
 
 ## Branches
 
 | Branch | Conteúdo |
 |---|---|
-| `main` | Projeto completo: tarefas 01 a 04 |
+| `main` | Projeto completo: tarefas 01 a 04, com as tags *many-to-many* |
 | `docker-postgres` | Branch onde as tarefas 03 e 04 foram desenvolvidas, antes do merge |
-| `tags-many-to-many` | **Extra:** tags *many-to-many* — uma anotação pode ter várias tags, digitadas separadas por vírgula |
-
-A `main` mantém a relação *many-to-one* porque é o que a tarefa 02 pede. A versão
-com *many-to-many* está na branch `tags-many-to-many`.
+| `tags-many-to-many` | Branch onde as tags *many-to-many* foram desenvolvidas, antes do merge |

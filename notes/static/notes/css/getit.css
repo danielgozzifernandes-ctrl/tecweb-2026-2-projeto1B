@@ -310,8 +310,14 @@ textarea.autoresize::placeholder {
   color: #a0a0a0;
 }
 
-.card-tag {
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
   margin-top: 12px;
+}
+
+.card-tag {
   font-family: "Roboto", sans-serif;
   font-size: 13px;
   color: #4c4c4c;

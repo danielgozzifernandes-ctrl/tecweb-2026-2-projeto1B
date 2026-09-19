@@ -3,24 +3,31 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import Note, Tag
 
 
-def _get_tag(nome):
-    """Devolve a tag com esse nome, criando uma nova se ainda não existir.
+def _get_tags(texto):
+    """Transforma o texto digitado no formulário numa lista de tags.
 
-    Retorna None quando o campo vem vazio (anotação sem tag).
+    O usuário separa os nomes por vírgula ("casa, prova, urgente"). Tags que já
+    existem são reaproveitadas e as novas são criadas. Devolve uma lista vazia
+    quando o campo vem em branco (anotação sem tag).
     """
-    nome = nome.strip()
-    if not nome:
-        return None
+    tags = []
+    for nome in texto.split(','):
+        nome = nome.strip()
+        if not nome:
+            continue
 
-    tag, _ = Tag.objects.get_or_create(nome=nome)
-    return tag
+        tag, _ = Tag.objects.get_or_create(nome=nome)
+        if tag not in tags:
+            tags.append(tag)
+
+    return tags
 
 
 def index(request):
     if request.method == 'POST':
         title = request.POST.get('titulo', '').strip()
         content = request.POST.get('detalhes', '').strip()
-        tag_nome = request.POST.get('tag', '')
+        tags_texto = request.POST.get('tags', '')
 
         if not title or not content:
             context = {
@@ -28,11 +35,12 @@ def index(request):
                 'erro': 'Preencha o título e o conteúdo da anotação.',
                 'titulo': title,
                 'detalhes': content,
-                'tag': tag_nome,
+                'tags': tags_texto,
             }
             return render(request, 'notes/index.html', context)
 
-        Note.objects.create(title=title, content=content, tag=_get_tag(tag_nome))
+        note = Note.objects.create(title=title, content=content)
+        note.tags.set(_get_tags(tags_texto))
         return redirect('index')
 
     return render(request, 'notes/index.html', {'notes': Note.objects.all()})
@@ -44,7 +52,7 @@ def edit(request, note_id):
     if request.method == 'POST':
         title = request.POST.get('titulo', '').strip()
         content = request.POST.get('detalhes', '').strip()
-        tag_nome = request.POST.get('tag', '')
+        tags_texto = request.POST.get('tags', '')
 
         if not title or not content:
             context = {
@@ -52,17 +60,18 @@ def edit(request, note_id):
                 'erro': 'Preencha o título e o conteúdo da anotação.',
                 'titulo': title,
                 'detalhes': content,
-                'tag': tag_nome,
+                'tags': tags_texto,
             }
             return render(request, 'notes/edit.html', context)
 
         note.title = title
         note.content = content
-        note.tag = _get_tag(tag_nome)
         note.save()
+        note.tags.set(_get_tags(tags_texto))
         return redirect('index')
 
-    return render(request, 'notes/edit.html', {'note': note})
+    tags_atuais = ', '.join(tag.nome for tag in note.tags.all())
+    return render(request, 'notes/edit.html', {'note': note, 'tags': tags_atuais})
 
 
 def delete(request, note_id):
